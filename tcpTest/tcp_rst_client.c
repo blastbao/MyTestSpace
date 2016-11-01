@@ -33,6 +33,7 @@ int main(int argc, char** argv)
         return -1;    
     }    
     char pcContent[5000]={0};  
+    ///client发送5000字节，server接收4096后close(),造成5000字节没被server应用程序可靠地接收，所以tcp协议会使server调用close时返回rst给client，告知此情况。
     write(send_sk,pcContent,5000);  
     sleep(1);  
     close(send_sk); 

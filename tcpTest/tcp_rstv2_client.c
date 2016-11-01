@@ -7,9 +7,20 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
+#include <fcntl.h>
+#include <signal.h>
+
 #define SER_IP "127.0.0.1"
 #define SER_PORT 9877
 #define MAX_LINE 128
+
+
+//for test sigpipe
+void sigpipe_info(int signo)
+{
+   printf("recieve signal sigpipe !\n");
+}
+
 int main(int argc, char** argv)    
 {    
     int send_sk;    
@@ -37,9 +48,12 @@ int main(int argc, char** argv)
     
     //在write之后，server会使用close()关闭这个socket,抓包能够捕获到server发送了一个FIN报文。
     //这里如果继续write()：往一个已关闭的socket发数据，抓包能够发现server会回复一个RST报文。
-    //这里如果直接close()会往server发送FIN报文，从而完成了TCP断连的四次挥手。
-    //
+    //这里如果直接close()：会往server发送FIN报文，从而完成了TCP断连的四次挥手。
     write(send_sk,pcContent,4096);  
+    //这里继续write()：往一个已经RST的SOCKET上继续发送数据，会捕获到sigpipe信号，默认终止程序，这里捕获该信号验证一下。
+    //signal(SIGPIPE, sigpipe_info);
+    //write(send_sk,pcContent,4096); 
+    printf("close socket right now !\n");
     close(send_sk);  
     return 0;
 } 
