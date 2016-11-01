@@ -37,7 +37,7 @@ int main(int argc, const char * argv[])
         sleep(1);
         char buffer[20];
         char sendMsg[200] = {0};
-        for (int i = 0; i<sizeof(sendMsg); i++) {
+        for (unsigned int i = 0; i<sizeof(sendMsg); i++) {
             sendMsg[i] = 'u';
         }
         
@@ -53,6 +53,7 @@ int main(int argc, const char * argv[])
         if (rresult == -1){
             printf("recvfrom fail\n"); 
         }else if(rresult > 0){
+            buffer[rresult] = 0;
             printf("server said:%s\n",buffer);
         }
 
